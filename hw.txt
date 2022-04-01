@@ -150,23 +150,26 @@ db.students.aggregate([
 // 10) Знайти середній бал дітей які вивчають математику або фізику           !!!!!!!!!!
 db.students.aggregate([
     {
-        $match: {
-            $or: [
-                {lessons: 'mathematics'},
-                {lessons: 'physics'},
-            ]
-        }
+        $unwind: '$lessons',
     },
     {
         $group: {
-            _id: '$name',
+            _id: '$lessons',
             avg: {$avg: '$avgScore'}
+        }
+    },
+    {
+        $match: {
+            $or: [
+                {_id: 'mathematics'},
+                {_id: 'physics'},
+            ]
         }
     },
     {
         $project: {
             _id: 0,
-            name: '$_id',
+            lessons: '$_id',
             AverageScore: '$avg'
         }
     }
